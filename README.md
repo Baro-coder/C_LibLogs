@@ -9,7 +9,7 @@
 1. [Overview](#overview)
 2. [Installation](#installation)
 3. [Example](#example)
-4. [Licence](#licence)
+4. [License](#license)
 
 --- 
 
@@ -252,6 +252,6 @@ int main(void) {
 
 ## **License**
 
-Library is full **open-source software**. You can redistribute it and/or modify it under the terms of the **GNU General Public Licence v3**. 
+Library is full **open-source software**. You can redistribute it and/or modify it under the terms of the **GNU General Public License v3**. 
 
 See [*LICENSE*](https://github.com/Baro-coder/C_LibLogs/blob/master/LICENSE) for details.
