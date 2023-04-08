@@ -21,7 +21,7 @@ echo "Baro-coder : C : liblogs : installing..."
 # Compile sources
 echo "  * Compiling sources..."
 
-sudo gcc -c ${SCRIPT_DIR}/logs/logs.c
+gcc -c ${SCRIPT_DIR}/logs/logs.c
 if check_result; then
     echo "Something went wrong!"
     exit 1
@@ -30,7 +30,7 @@ fi
 # Making library
 echo "  * Making library..."
 
-sudo ar crs ./liblogs.a ./logs.o
+ar crs ./liblogs.a ./logs.o
 if check_result; then
     echo "Something went wrong!"
     exit 1
