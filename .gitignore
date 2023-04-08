@@ -1,3 +1,7 @@
+# Cache and builds
+build
+*.cache
+
 # Prerequisites
 *.d
 

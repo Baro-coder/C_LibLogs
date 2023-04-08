@@ -24,18 +24,18 @@
 
 /* -- Header -- */
 #include "logs.h"
-
+#include <stdarg.h>
 
 /* -- STATIC VARS -- */
 
 // -- Stream
-static FILE* stream = NULL;
+static FILE* out_stream = NULL;
 
 // -- Thread-Safety Semaphore
 static sem_t* mtx = NULL;
 
 // -- Level min
-static log_level_t level_min = trace;
+static log_level_t level_min = LOG_LEVEL_TRACE;
 
 // -- Log level names
 const char* __LEVEL_NAMES[] = {
@@ -50,38 +50,75 @@ const char* __LEVEL_NAMES[] = {
 /* ---------------------------------------------------------------------------------------------------- */
 /* -- PRIVATE FUNCTIONS -- */
 
-// Print timestamp, level name and owner
-void __log_preprint(log_level_t level, const char* owner) {
-    if (mtx != NULL) {
-        sem_wait(mtx);
-    }
-
+// Print log
+void __log_print(log_level_t level, const char* owner, const char* fmt, va_list args) {
+    // -- Getting datetime data
     time_t *now = (time_t*) malloc(sizeof(time_t));
     time(now);
     struct tm *tm = localtime(now);
 
-    fprintf(stderr, "[%d-%02d-%02d %02d:%02d:%02d] : [%s] : [%s] : ", 
+    char* timestamp = (char*) malloc(TIMESTAMP_BUFF_SIZE * sizeof(char));
+    sprintf(timestamp, "%02d-%02d-%02d %02d:%02d:%02d", 
         tm->tm_mday, 
         tm->tm_mon + 1,
         tm->tm_year + 1900, 
         tm->tm_hour, 
         tm->tm_min, 
-        tm->tm_sec, 
-        __LEVEL_NAMES[level], 
-        owner);
+        tm->tm_sec);
 
+
+    // -- Mutex Lock
+    if (mtx != NULL) {
+        sem_wait(mtx);
+    }
+
+    // -- Log Output
+    if(out_stream != NULL) {
+        fprintf(out_stream, "[%s] | [%s] | [%s (%d)] | ", 
+            timestamp, 
+            __LEVEL_NAMES[level], 
+            owner, 
+            getpid());
+        vfprintf(out_stream, fmt, args);
+        fputc('\n', out_stream);
+    } else {
+        fprintf(stderr, "[%s] | [%s] | [%s (%d)] | ", 
+            timestamp, 
+            __LEVEL_NAMES[level], 
+            owner, 
+            getpid());
+        vfprintf(stderr, fmt, args);
+        fputc('\n', stderr);
+    }
+
+    // -- Memory free
     free(now);
+    free(timestamp);
+
+    // -- Mutex Unlock
+    if(mtx != NULL) {
+        sem_post(mtx);
+    }
 }
 
-bool_t __check_level(log_level_t level) {
+// Check minimal level
+static bool_t __check_min_level(log_level_t level) {
     return (level >= level_min);
+}
+
+// Check level and print log
+void __log(log_level_t level, const char* owner, const char* fmt, va_list args) {
+    if(!__check_min_level(level)) {
+        return;
+    }
+    __log_print(level, owner, fmt, args);
 }
 
 /* ---------------------------------------------------------------------------------------------------- */
 /* -- PUBLIC FUNCTIONS -- */
 
 // ---- Threads-Safety semaphore init
-int logging_threads_safety_enable(const char* sem_name) {
+int logs_threads_safety_enable(const char* sem_name) {
     mtx = sem_open(sem_name, O_CREAT | O_EXCL, 0666, 1);
     if (mtx == SEM_FAILED) {
         return 1;
@@ -89,7 +126,7 @@ int logging_threads_safety_enable(const char* sem_name) {
     return 0;
 }
 // ---- Threads-Safety semaphore destroy
-int logging_threads_safety_disable(const char* sem_name) {
+int logs_threads_safety_disable(const char* sem_name) {
     if (sem_close(mtx) < 0) {
         return 2;
     }
@@ -103,135 +140,65 @@ int logging_threads_safety_disable(const char* sem_name) {
 }
 
 // ---- Minimal log level set
-void set_minimal_log_level(log_level_t level) {
+void logs_set_minimal_log_level(log_level_t level) {
     level_min = level;
 }
 
-
+// ---- Output stream set `stream`
+void logs_set_output_stream(FILE* stream) {
+    out_stream = stream;
+}
+// ---- Output stream set DEFAULT
+void logs_set_output_stream_default() {
+    logs_set_output_stream(NULL);
+}
 
 // ---- 'SPECIFIED' LOG
-void log(log_level_t level, const char* owner, const char* fmt, ...) {
-    if(!__check_level(level)) {
-        return;
-    }
-
-    __log_preprint(level, owner);
-
+void logs_log(log_level_t level, const char* owner, const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    vfprintf(stderr, fmt, args);
-    fputc('\n', stderr);
+    __log(level, owner, fmt, args);
     va_end(args);
-
-    if(mtx != NULL) {
-        sem_post(mtx);
-    }
 }
 // ---- TRACE LOG
-void log_trace(const char* owner, const char* fmt, ...) {
-    if(!__check_level(trace)) {
-        return;
-    }
-
-    __log_preprint(trace, owner);
-
+void logs_log_trace(const char* owner, const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    vfprintf(stderr, fmt, args);
-    fputc('\n', stderr);
+    __log(LOG_LEVEL_TRACE, owner, fmt, args);
     va_end(args);
-
-    if(mtx != NULL) {
-        sem_post(mtx);
-    }
 }
 // ---- DEBUG LOG
-void log_debug(const char* owner, const char* fmt, ...) {
-    if(!__check_level(debug)) {
-        return;
-    }
-
-    __log_preprint(debug, owner);
-
+void logs_log_debug(const char* owner, const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    vfprintf(stderr, fmt, args);
-    fputc('\n', stderr);
+    __log(LOG_LEVEL_DEBUG, owner, fmt, args);
     va_end(args);
-
-    if(mtx != NULL) {
-        sem_post(mtx);
-    }
 }
 // ---- INFO LOG
-void log_info(const char* owner, const char* fmt, ...) {
-    if(!__check_level(info)) {
-        return;
-    }
-
-    __log_preprint(info, owner);
-
+void logs_log_info(const char* owner, const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    vfprintf(stderr, fmt, args);
-    fputc('\n', stderr);
+    __log(LOG_LEVEL_INFO, owner, fmt, args);
     va_end(args);
-
-    if(mtx != NULL) {
-        sem_post(mtx);
-    }
 }
 // ---- WARNING LOG
-void log_warn(const char* owner, const char* fmt, ...) {
-    if(!__check_level(warning)) {
-        return;
-    }
-
-    __log_preprint(warning, owner);
-
+void logs_log_warn(const char* owner, const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    vfprintf(stderr, fmt, args);
-    fputc('\n', stderr);
+    __log(LOG_LEVEL_WARNING, owner, fmt, args);
     va_end(args);
-
-    if(mtx != NULL) {
-        sem_post(mtx);
-    }
 }
 // ---- ERROR LOG
-void log_error(const char* owner, const char* fmt, ...) {
-    if(!__check_level(error)) {
-        return;
-    }
-
-    __log_preprint(error, owner);
-
+void logs_log_error(const char* owner, const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    vfprintf(stderr, fmt, args);
-    fputc('\n', stderr);
+    __log(LOG_LEVEL_ERROR, owner, fmt, args);
     va_end(args);
-
-    if(mtx != NULL) {
-        sem_post(mtx);
-    }
 }
 // ---- FATAL LOG
-void log_fatal(const char* owner, const char* fmt, ...) {
-    if(!__check_level(fatal)) {
-        return;
-    }
-
-    __log_preprint(fatal, owner);
-
+void logs_log_fatal(const char* owner, const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    vfprintf(stderr, fmt, args);
-    fputc('\n', stderr);
+    __log(LOG_LEVEL_FATAL, owner, fmt, args);
     va_end(args);
-
-    if(mtx != NULL) {
-        sem_post(mtx);
-    }
 }
