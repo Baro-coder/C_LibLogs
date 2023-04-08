@@ -1,22 +1,12 @@
-/* *** Includes *** */
-// -- Built-in
-
-// -- Logs
-#include "logs.h"
+#include <logs.h>
 #include <sys/wait.h>
 
-#define  TIMESTAMP_BUFF_SIZE 20
-
 void* thread_body(int id) {
-    logs_log_info("Sub", "P%d -- Init...", id);
-
-    for(unsigned int i = 0; i < 1000000; i++) {
-        for(unsigned int j = 0; j < 1000; j++) {
-            ;;
-        }
-    }
+    logs_log_debug("Sub", "P%d -- Init...", id);
+    
     sleep(1);
-    logs_log_info("Sub", "P%d -- End of work.", id);
+
+    logs_log(LOG_LEVEL_DEBUG, "Sub", "P%d -- End of work.", id);
 
     return NULL;
 }
@@ -35,7 +25,7 @@ int main(void) {
         }
     }
 
-    logs_log_info("App", "Waiting...");
+    logs_log_trace("App", "Waiting...");
     for(int i = 0; i < p_count; i++) {
         wait(NULL);
     }
