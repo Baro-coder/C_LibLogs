@@ -252,10 +252,6 @@ int main(void) {
 
 ## **License**
 
-<<<<<<< HEAD
 Library is full **open-source software**. You can redistribute it and/or modify it under the terms of the **GNU General Public Licence v3**. 
 
 See [*LICENSE*](https://github.com/Baro-coder/C_LibLogs/blob/master/LICENSE) for details.
-=======
-This library is free software; you can redistribute it and/or modify it under the terms of the MIT license. See [LICENSE](https://github.com/Baro-coder/C_LibLogs/blob/master/LICENSE) for details.
->>>>>>> master
