@@ -178,8 +178,9 @@ sudo ./logs/liblogs.a /usr/lib/
 
 ## **Example**
 
-### **Example program source code**
+### **Source code**
 
+*fork.c :*
 ``` c
 #include <logs.h>
 #include <sys/wait.h>
@@ -220,7 +221,18 @@ int main(void) {
 }
 ```
 
+### **Compilation**
+You have to link library in compilation process:
+
+*Example:*
+``` console
+gcc fork.c -o fork.out -llogs
+```
+
 ### **Output**
+``` console
+./fork.out
+```
 
 ``` text
 [08-04-2023 15:29:06] | [  INFO   ] | [App (20756)] | Initializing...
