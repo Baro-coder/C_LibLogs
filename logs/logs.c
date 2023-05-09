@@ -119,6 +119,7 @@ void __log(log_level_t level, const char* owner, const char* fmt, va_list args) 
 
 // ---- Threads-Safety semaphore init
 int logs_threads_safety_enable(const char* sem_name) {
+    mtx = (sem_t*) malloc(sizeof(sem_t));
     mtx = sem_open(sem_name, O_CREAT | O_EXCL, 0666, 1);
     if (mtx == SEM_FAILED) {
         return 1;
@@ -130,11 +131,12 @@ int logs_threads_safety_disable(const char* sem_name) {
     if (sem_close(mtx) < 0) {
         return 2;
     }
+    
+    mtx = NULL;
+
     if (sem_unlink(sem_name) < 0) {
         return 1;
     }
-    
-    mtx = NULL;
 
     return 0;
 }

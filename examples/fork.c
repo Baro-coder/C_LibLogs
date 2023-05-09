@@ -4,8 +4,6 @@
 void* thread_body(int id) {
     logs_log_debug("Sub", "P%d -- Init...", id);
     
-    sleep(1);
-
     logs_log(LOG_LEVEL_DEBUG, "Sub", "P%d -- End of work.", id);
 
     return NULL;
@@ -19,10 +17,7 @@ int main(void) {
     logs_threads_safety_enable("/semTest");
     
     for(int i = 0; i < p_count; i++) {
-        if(fork() == 0) {
-            thread_body(i);
-            exit(0);
-        }
+        thread_body(i);
     }
 
     logs_log_trace("App", "Waiting...");
