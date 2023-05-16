@@ -115,6 +115,8 @@ void logs_set_output_stream_default();
 
 ## **Installation**
 
+### *Attention!* Installation guide requires a UNIX type operating system.
+
 ### **Automatic**
 
 ### 1. Clone repository:
