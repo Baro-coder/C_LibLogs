@@ -34,6 +34,7 @@ static bool_t mute_std_streams = 0;
 #ifdef _WIN32
 #include <windows.h>
 #include <Lmcons.h>
+#include <process.h>
 
 // -- Get username
 static char *get_username()
