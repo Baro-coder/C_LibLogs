@@ -99,7 +99,7 @@ void logs_mute_std_streams(bool_t mute);
 /// @param fmt message format
 /// @param ... message arguments
 /// @attention If `owner` is `NULL`, it will be set to name of user who called the function
-void logs_log(log_level_t level, char *owner, const char *fmt, ...);
+void logs_log(log_level_t level, const char *owner, const char *fmt, ...);
 
 /// @brief Write TRACE log with `owner` and message as formatted output
 /// @param owner log owner

@@ -52,24 +52,20 @@ static char *get_username()
 // -- Thread-Safety Semaphore
 static sem_t *mtx = NULL;
 
+#include <pwd.h>
+#include <unistd.h>
+
 // -- Get username
 static char *get_username()
 {
     struct passwd *pw = getpwuid(getuid());
-    if (pw)
+    if (pw && pw->pw_name)
     {
-        if (strlen(pw->pw_name) == 0 || strlen(pw->pw_name) > OWNER_BUFF_SIZE || pw->pw_name == NULL)
+        if (strlen(pw->pw_name) == 0 || strlen(pw->pw_name) > OWNER_BUFF_SIZE)
         {
             return "unknown";
         }
-        else
-        {
-            return pw->pw_name;
-        }
-    }
-    else
-    {
-        return "unknown";
+        return pw->pw_name;
     }
 }
 #endif
@@ -186,18 +182,21 @@ static bool_t __check_min_level(log_level_t level)
 }
 
 // Check level and print log
-void __log(log_level_t level, char *owner, const char *fmt, va_list args)
+void __log(log_level_t level, const char *owner, const char *fmt, va_list args)
 {
     if (!__check_min_level(level))
     {
         return;
     }
+
     if (owner == NULL || owner == "" || owner == " " || owner[0] == '\0')
     {
-        owner = OWNER_DEFAULT;
+        __log_print(level, OWNER_DEFAULT, fmt, args);
     }
-
-    __log_print(level, owner, fmt, args);
+    else
+    {
+        __log_print(level, owner, fmt, args);
+    }
 }
 
 /* ---------------------------------------------------------------------------------------------------- */
