@@ -24,7 +24,6 @@
 
 /* -- Header -- */
 #include "logs.h"
-#include <stdarg.h>
 
 /* -- STATIC VARS -- */
 
@@ -48,9 +47,8 @@ static char *get_username()
     }
     return username;
 }
-#endif
 
-#ifdef __linux__
+#elif __linux__
 // -- Thread-Safety Semaphore
 static sem_t *mtx = NULL;
 

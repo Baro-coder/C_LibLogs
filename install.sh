@@ -21,7 +21,7 @@ echo "Baro-coder : C : liblogs : installing..."
 # Compile sources
 echo "  * Compiling sources..."
 
-gcc -c ${SCRIPT_DIR}/logs/logs.c
+gcc -c ${SCRIPT_DIR}/c-liblogs/src/logs.c
 if check_result; then
     echo "Something went wrong!"
     exit 1
@@ -30,7 +30,7 @@ fi
 # Making library
 echo "  * Making library..."
 
-ar crs ./liblogs.a ./logs.o
+ar crs ./libc-liblogs.a ./logs.o
 if check_result; then
     echo "Something went wrong!"
     exit 1
@@ -39,7 +39,7 @@ fi
 # Header
 echo "  * Copying header..."
 
-sudo cp ${SCRIPT_DIR}/logs/logs.h /usr/include/
+sudo cp ${SCRIPT_DIR}/c-liblogs/include/logs.h /usr/local/include/
 if check_result; then
     echo "Something went wrong!"
     exit 1
@@ -48,7 +48,7 @@ fi
 # Link: lib
 echo "  * Copying library..."
 
-sudo cp ./liblogs.a /usr/lib/
+sudo cp ./libc-liblogs.a /usr/local/lib/
 if check_result; then
     echo "Something went wrong!"
     exit 1

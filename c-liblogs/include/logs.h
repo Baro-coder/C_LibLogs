@@ -23,10 +23,8 @@
 /* *** INCLUDES *** */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdarg.h>
-#ifdef __linux__
-#include <semaphore.h>
-#endif
 #include <fcntl.h>
 #include <time.h>
 
@@ -60,6 +58,8 @@ typedef enum __log_level_t
 /* --- OPTIONS */
 
 #ifdef __linux__
+#include <semaphore.h>
+
 /// @brief Creating semaphore with name as `sem_name` to sync threads printing.
 /// @attention Remember to call `logs_threads_safety_disable()` to remove created semaphore!
 /// @param sem_name semaphore name
