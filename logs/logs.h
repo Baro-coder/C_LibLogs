@@ -36,7 +36,12 @@
 #define TIMESTAMP_BUFF_SIZE 72 // Buffer size for timestamp
 
 // Custom boolean type
+// -- Type for boolean values
 typedef int bool_t;
+
+// -- True / False values
+#define TRUE 1
+#define FALSE 0
 
 // -- Log levels
 // Log levels enumeration
@@ -78,6 +83,11 @@ void logs_set_output_stream(FILE *stream);
 
 /// @brief Set log output stream to `stderr`
 void logs_set_output_stream_default();
+
+/// @brief Prevent standard streams from printing logs
+/// @param mute `TRUE` (`1`) to mute; `FALSE` (`0`) to unmute
+/// @attention If `mute` is `TRUE`, logs will not be printed to standard streams
+void logs_mute_std_streams(bool_t mute);
 
 /* --- LOG WRITERS */
 

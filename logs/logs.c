@@ -30,6 +30,7 @@
 
 // -- Stream
 static FILE *out_stream = NULL;
+static bool_t mute_std_streams = 0;
 
 #ifdef _WIN32
 #include <windows.h>
@@ -121,6 +122,10 @@ void __log_print(log_level_t level, const char *owner, const char *fmt, va_list 
     // -- Log Output
     if (out_stream == NULL)
     {
+        if (mute_std_streams == TRUE)
+        {
+            return;
+        }
         // -- Output to stderr
         fprintf(stderr, "[%s] | [%s] | [%s (%d)] | ",
                 timestamp,
@@ -134,7 +139,7 @@ void __log_print(log_level_t level, const char *owner, const char *fmt, va_list 
     }
     else
     {
-        if (out_stream != stdout && out_stream != stderr)
+        if (out_stream != stdout && out_stream != stderr && mute_std_streams == FALSE)
         {
             // -- Copy args
             va_list args_copy;
@@ -246,6 +251,11 @@ void logs_set_output_stream(FILE *stream)
 void logs_set_output_stream_default()
 {
     logs_set_output_stream(NULL);
+}
+// ---- Mute standard streams
+void logs_mute_std_streams(bool_t mute)
+{
+    mute_std_streams = mute;
 }
 
 // ---- 'SPECIFIED' LOG
