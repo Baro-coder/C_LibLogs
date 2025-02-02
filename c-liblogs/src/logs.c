@@ -32,10 +32,6 @@ static FILE *out_stream = NULL;
 static bool_t mute_std_streams = 0;
 
 #ifdef _WIN32
-#include <windows.h>
-#include <Lmcons.h>
-#include <process.h>
-
 // -- Thread-Safety Semaphore
 static HANDLE mtx = NULL;
 
@@ -55,9 +51,6 @@ static char *get_username()
 #elif __linux__
 // -- Thread-Safety Semaphore
 static sem_t *mtx = NULL;
-
-#include <pwd.h>
-#include <unistd.h>
 
 // -- Get username
 static char *get_username()
@@ -219,7 +212,6 @@ void __log(log_level_t level, const char *owner, const char *fmt, va_list args)
 /* ---------------------------------------------------------------------------------------------------- */
 /* -- PUBLIC FUNCTIONS -- */
 #ifdef _WIN32
-#include <windows.h>
 // ---- Threads-Safety semaphore init
 int logs_threads_safety_enable(const char *sem_name)
 {
@@ -230,7 +222,6 @@ int logs_threads_safety_enable(const char *sem_name)
     }
     return 0;
 }
-
 // ---- Threads-Safety semaphore destroy
 int logs_threads_safety_disable(const char *sem_name)
 {

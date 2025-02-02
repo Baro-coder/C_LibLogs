@@ -59,18 +59,24 @@ typedef enum __log_level_t
 
 // TODO: Redefine description for Windows
 #ifdef _WIN32
+#include <windows.h>
+#include <Lmcons.h>
+#include <process.h>
+
 /// @brief Creating semaphore with name as `sem_name` to sync threads printing.
 /// @attention Remember to call `logs_threads_safety_disable()` to remove created semaphore!
 /// @param sem_name semaphore name
-/// @return `0` on success; `1` - sem_open error
+/// @return `0` on success; `1` - CreateSemaphore error
 int logs_threads_safety_enable(const char *sem_name);
 
 /// @brief Removing semaphore with name as `sem_name` to sync threads printing.
 /// @param sem_name semaphore name
-/// @return `0` on success; `1` - sem_unlink error; `2` - sem_close error
+/// @return `0` on success; `1` - CloseHandle error; `2` - mtx NullPointer error
 int logs_threads_safety_disable(const char *sem_name);
 
 #elif __linux__
+#include <pwd.h>
+#include <unistd.h>
 #include <semaphore.h>
 
 /// @brief Creating semaphore with name as `sem_name` to sync threads printing.
