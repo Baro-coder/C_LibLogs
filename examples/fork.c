@@ -21,6 +21,7 @@ void* thread_body(void* arg) {
     int id = *((int*)arg);
     logs_log_debug("Sub", "P%d -- Init...", id);
     logs_log(LOG_LEVEL_DEBUG, "Sub", "P%d -- End of work.", id);
+    free(id);
     return NULL;
 }
 
@@ -37,6 +38,10 @@ int main(void) {
 
     for(int i = 0; i < P_COUNT; i++) {
         int* id = malloc(sizeof(int));
+        if (id == NULL) {
+            logs_log_error("App", "Memory allocation failed.");
+            return 1;
+        }
         *id = i;
 
 #ifdef _WIN32
