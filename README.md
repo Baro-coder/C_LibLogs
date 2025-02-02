@@ -1,23 +1,18 @@
 # ***C LibLogs***
 
-## *C logging library*
-
----
-
 ## **Content:**
 
 1. [Overview](#overview)
 2. [Installation](#installation)
-3. [Example](#example)
-4. [License](#license)
-
----
+3. [Usage](#usage)
+4. [Example](#example)
+5. [License](#license)
 
 ## **Overview**
 
 ### **Description**
 
-Simple logging library developed in C.
+Simple logging library developed in C, providing structured log messages with timestamps, log levels, process IDs, and formatted messages. The library supports multi-threaded applications by implementing semaphore-based synchronization.
 
 *Example output:*
 
@@ -26,17 +21,9 @@ Simple logging library developed in C.
 [08-04-2023 15:14:22] | [ DEBUG ] | [Sub (19685)] | P1 -- Init...
 [08-04-2023 15:14:22] | [ DEBUG ] | [Sub (19684)] | P0 -- Init...
 [08-04-2023 15:14:22] | [ DEBUG ] | [Sub (19686)] | P2 -- Init...
-[08-04-2023 15:14:22] | [ DEBUG ] | [Sub (19689)] | P5 -- Init...
-[08-04-2023 15:14:22] | [ DEBUG ] | [Sub (19687)] | P3 -- Init...
-[08-04-2023 15:14:22] | [ DEBUG ] | [Sub (19688)] | P4 -- Init...
-[08-04-2023 15:14:22] | [ DEBUG ] | [Sub (19690)] | P6 -- Init...
 [08-04-2023 15:14:22] | [ TRACE ] | [App (19683)] | Waiting...
-[08-04-2023 15:14:25] | [ DEBUG ] | [Sub (19688)] | P4 -- End of work.
-[08-04-2023 15:14:25] | [ DEBUG ] | [Sub (19687)] | P3 -- End of work.
 [08-04-2023 15:14:25] | [ DEBUG ] | [Sub (19686)] | P2 -- End of work.
-[08-04-2023 15:14:25] | [ DEBUG ] | [Sub (19689)] | P5 -- End of work.
 [08-04-2023 15:14:25] | [ DEBUG ] | [Sub (19685)] | P1 -- End of work.
-[08-04-2023 15:14:25] | [ DEBUG ] | [Sub (19690)] | P6 -- End of work.
 [08-04-2023 15:14:25] | [ DEBUG ] | [Sub (19684)] | P0 -- End of work.
 [08-04-2023 15:14:25] | [ INFO  ] | [App (19683)] | Done.
 ```
@@ -44,40 +31,25 @@ Simple logging library developed in C.
 *Format:*
 
 ``` text
-[08-04-2023 15:14:22] | [ INFO  ] | [App (19683)] | Initializing...
- ^datetime               ^level      ^owner(^PID)    ^Formatted message
+[datetime] | [level] | [owner(PID)] | message
 ```
 
 ### **Interface**
 
 ``` c
 /* --- LOG WRITERS */
-// Write `level` log with `owner` and message as formatted output
 void logs_log(log_level_t level, const char* owner, const char* fmt, ...);
-
-// Write TRACE log with `owner` and message as formatted output
 void logs_log_trace(const char* owner, const char* fmt, ...);
-
-// Write DEBUG log with `owner` and message as formatted output
 void logs_log_debug(const char* owner, const char* fmt, ...);
-
-// Write INFO log with `owner` and message as formatted output
 void logs_log_info(const char* owner, const char* fmt, ...);
-
-// Write WARNING log with `owner` and message as formatted output
 void logs_log_warn(const char* owner, const char* fmt, ...);
-
-// Write ERROR log with `owner` and message as formatted output
 void logs_log_error(const char* owner, const char* fmt, ...);
-
-// Write FATAL log with `owner` and message as formatted output
 void logs_log_fatal(const char* owner, const char* fmt, ...);
 ```
 
 ### **Log Levels**
 
 ``` c
-// Log levels enumeration
 enum __log_level_t{
     LOG_LEVEL_TRACE,    // --> 0
     LOG_LEVEL_DEBUG,    // --> 1
@@ -93,23 +65,12 @@ typedef enum __log_level_t log_level_t;
 
 ``` c
 /* --- OPTIONS */
-
-// Creating semaphore with name as `sem_name` to sync threads printing.
-//  `Attention`: Remember to call `logs_threads_safety_disable()` to remove created semaphore!
-//  Returns: `0` on success; `1` - sem_open error
 int logs_threads_safety_enable(const char* sem_name);
-
-// Removing semaphore with name as `sem_name` to sync threads printing.
-//  Returns: `0` on success; `1` - sem_unlink error; `2` - sem_close error
 int logs_threads_safety_disable(const char* sem_name);
 
-// Set minimal log level to `level` (default: LOG_LEVEL_TRACE)
 void logs_set_minimal_log_level(log_level_t level);
 
-// Set log output stream to `stream` (default: `stderr`)
 void logs_set_output_stream(FILE* stream);
-
-// Set log output stream to `stderr`
 void logs_set_output_stream_default();
 ```
 
@@ -117,101 +78,136 @@ void logs_set_output_stream_default();
 
 ## **Installation**
 
-### *Attention!* Installation guide requires a UNIX type operating system
+### **CMake Build System**
 
-### 0. Clone repository
-
-0.1. Download repository:
+To simplify library integration, I provide a `CMakeLists.txt` configuration. You can include the library in your project with:
 
 ``` console
-git clone https://github.com/Baro-coder/C_LibLogs
+mkdir build && cd build
+cmake ..
+make
 ```
 
-0.2. Change directory:
+***Additionally***, if you want the library to be available **globally** (not only in an actual project), you can eventually execute the following command:
 
 ``` console
-cd ./C_LibLogs/
+sudo make install
 ```
 
-### **Automatic**
+***Alternatively***, include the library in your CMake project with:
 
-### 1. Run installation script (*`sudo` required*)
+``` cmake
+add_subdirectory(c-liblogs)
+target_link_libraries(your_project PRIVATE c-liblogs)
+```
 
-```console
-sudo ./install.sh
+### **Manual Installation**
+
+1. Clone repository:
+
+``` console
+
+```
+
+2. Build:
+
+``` console
+
+```
+
+3. Install:
+
+``` console
+
 ```
 
 ---
 
-### **Manual**
+## **Usage**
 
-### 1. Build
+### **Including in project**
 
-2.1. Compile source:
-
-``` console
-gcc -c ./logs/logs.c -o ./logs/logs.o
+``` c
+#include <logs.h>
 ```
 
-2.2. Make static library:
+### **Compiling with the library**
 
-```console
-ar crs ./logs/liblogs.a ./logs/logs.o
-```
-
-### 2. Link
-
-3.1. Copy header file to include path:
-
-```console
-sudo ./logs/logs.h /usr/include/
-```
-
-3.2. Copy library file to lib path:
-
-``` console
-sudo ./logs/liblogs.a /usr/lib/
+``` terminal
+gcc your_program.c -o your_program -llogs
 ```
 
 ---
 
 ## **Example**
 
-### **Source code**
-
-*fork.c :*
+### **fork.c**
 
 ``` c
 #include <logs.h>
-#include <sys/wait.h>
 
-void* thread_body(int id) {
+#ifdef _WIN32
+    #include <windows.h>
+#elif defined(__linux__)
+    #include <sys/wait.h>
+    #include <sys/types.h>
+    #include <pthread.h>
+#elif defined(__APPLE__)
+    #include <TargetConditionals.h>
+    #if TARGET_OS_MAC
+        #include <sys/wait.h>
+    #endif
+#else
+    #error "Unsupported OS"
+#endif
+
+#define P_COUNT 20
+
+void* thread_body(void* arg) {
+    int id = *((int*)arg);
     logs_log_debug("Sub", "P%d -- Init...", id);
-    
-    sleep(1);
-
     logs_log(LOG_LEVEL_DEBUG, "Sub", "P%d -- End of work.", id);
-
     return NULL;
 }
 
 
 int main(void) {
-    int p_count = 10;
-
     logs_log_info("App", "Initializing...");
     logs_threads_safety_enable("/semTest");
     
-    for(int i = 0; i < p_count; i++) {
-        if(fork() == 0) {
-            thread_body(i);
-            exit(0);
+#ifdef _WIN32
+    HANDLE threads[P_COUNT];
+#else
+    pthread_t threads[P_COUNT];
+#endif
+
+    for(int i = 0; i < P_COUNT; i++) {
+        int* id = malloc(sizeof(int));
+        *id = i;
+
+#ifdef _WIN32
+        threads[i] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)thread_body, id, 0, NULL);
+        if (threads[i] == NULL) {
+            logs_log_error("App", "Thread creation failed.");
+            return 1;
         }
+#else
+        if(pthread_create(&threads[i], NULL, thread_body, id) != 0) {
+            logs_log_error("App", "Thread creation failed.");
+            return 1;
+        }
+#endif
     }
 
     logs_log_trace("App", "Waiting...");
-    for(int i = 0; i < p_count; i++) {
-        wait(NULL);
+
+    for(int i = 0; i < P_COUNT; i++) {
+#ifdef _WIN32
+        WaitForSingleObject(threads[i], INFINITE);
+        CloseHandle(threads[i]);
+#else
+        pthread_join(threads[i], NULL);
+#endif
     }
 
     logs_threads_safety_disable("/semTest");
@@ -221,46 +217,11 @@ int main(void) {
 }
 ```
 
-### **Compilation**
-
-You have to link library in compilation process:
-
-*Example:*
+### **Running the example**
 
 ``` console
-gcc fork.c -o fork.out -llogs
-```
-
-### **Output**
-
-``` console
-./fork.out
-```
-
-``` text
-[08-04-2023 15:29:06] | [  INFO   ] | [App (20756)] | Initializing...
-[08-04-2023 15:29:06] | [  DEBUG  ] | [Sub (20757)] | P0 -- Init...
-[08-04-2023 15:29:06] | [  DEBUG  ] | [Sub (20759)] | P2 -- Init...
-[08-04-2023 15:29:06] | [  DEBUG  ] | [Sub (20758)] | P1 -- Init...
-[08-04-2023 15:29:06] | [  DEBUG  ] | [Sub (20760)] | P3 -- Init...
-[08-04-2023 15:29:06] | [  DEBUG  ] | [Sub (20764)] | P7 -- Init...
-[08-04-2023 15:29:06] | [  DEBUG  ] | [Sub (20761)] | P4 -- Init...
-[08-04-2023 15:29:06] | [  DEBUG  ] | [Sub (20762)] | P5 -- Init...
-[08-04-2023 15:29:06] | [  TRACE  ] | [App (20756)] | Waiting...
-[08-04-2023 15:29:06] | [  DEBUG  ] | [Sub (20763)] | P6 -- Init...
-[08-04-2023 15:29:06] | [  DEBUG  ] | [Sub (20765)] | P8 -- Init...
-[08-04-2023 15:29:06] | [  DEBUG  ] | [Sub (20766)] | P9 -- Init...
-[08-04-2023 15:29:07] | [  DEBUG  ] | [Sub (20757)] | P0 -- End of work.
-[08-04-2023 15:29:07] | [  DEBUG  ] | [Sub (20759)] | P2 -- End of work.
-[08-04-2023 15:29:07] | [  DEBUG  ] | [Sub (20758)] | P1 -- End of work.
-[08-04-2023 15:29:07] | [  DEBUG  ] | [Sub (20760)] | P3 -- End of work.
-[08-04-2023 15:29:07] | [  DEBUG  ] | [Sub (20764)] | P7 -- End of work.
-[08-04-2023 15:29:07] | [  DEBUG  ] | [Sub (20761)] | P4 -- End of work.
-[08-04-2023 15:29:07] | [  DEBUG  ] | [Sub (20762)] | P5 -- End of work.
-[08-04-2023 15:29:07] | [  DEBUG  ] | [Sub (20763)] | P6 -- End of work.
-[08-04-2023 15:29:07] | [  DEBUG  ] | [Sub (20765)] | P8 -- End of work.
-[08-04-2023 15:29:07] | [  DEBUG  ] | [Sub (20766)] | P9 -- End of work.
-[08-04-2023 15:29:07] | [  INFO   ] | [App (20756)] | Done.
+gcc fork.c -o fork.exe -llogs
+./fork.exe
 ```
 
 ---
