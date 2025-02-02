@@ -74,6 +74,54 @@ void logs_set_output_stream(FILE* stream);
 void logs_set_output_stream_default();
 ```
 
+#### **Threads safety mode**
+
+When using the library in multi-threaded or multi-process applications, it is necessary to synchronize access to shared logging resources. This can be done by enabling thread safety mode with a named semaphore:
+
+``` c
+// Enable thread safety mode using a named semaphore
+logs_threads_safety_enable("/semTest");
+```
+
+After enabling thread safety, all log operations will be synchronized, ensuring that multiple threads or processes do not write logs simultaneously in a conflicting manner.
+
+Once logging is no longer needed, disable thread safety to release system resources:
+
+``` c
+// Disable thread safety mode
+logs_threads_safety_disable("/semTest");
+```
+
+Failing to disable thread safety after usage may lead to unnecessary resource consumption or locking issues.
+
+#### **Set minimal log level**
+
+You can control the verbosity of logs using `logs_set_minimal_log_level()`. For example:
+
+``` c
+// Only log messages with level INFO and above
+logs_set_minimal_log_level(LOG_LEVEL_INFO);
+```
+
+#### **Logging to a File**
+
+By default, logs are written to `stderr`. You can redirect logs to a file:
+
+``` c
+FILE* logfile = fopen("logs.txt", "w");
+if (logfile) {
+    logs_set_output_stream(logfile);
+}
+
+// -- Program code begin --
+// ...
+// -- Program code end --
+
+if (logfile) {
+    fclose(logfile);
+}
+```
+
 ---
 
 ## **Installation**
