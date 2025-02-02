@@ -78,9 +78,17 @@ void logs_set_output_stream_default();
 
 ## **Installation**
 
-### **CMake Build System**
+### **Linux Installation**
 
-To simplify library integration, I provide a `CMakeLists.txt` configuration. You can include the library in your project with:
+#### **Using CMake**
+
+1. Install CMake Build System Tools with:
+
+``` console
+sudo apt install -y cmake
+```
+
+2. Open a terminal in your project directory and run:
 
 ``` console
 mkdir build && cd build
@@ -94,6 +102,12 @@ make
 sudo make install
 ```
 
+In this way, the library will be installed in `/usr/local/lib` and `/usr/local/include/`. It can be necessary to update `LD_LIBRARY_PATH` with:
+
+``` sh
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+```
+
 ***Alternatively***, include the library in your CMake project with:
 
 ``` cmake
@@ -101,24 +115,90 @@ add_subdirectory(c-liblogs)
 target_link_libraries(your_project PRIVATE c-liblogs)
 ```
 
-### **Manual Installation**
+#### **Manual Installation**
 
 1. Clone repository:
 
 ``` console
-
+git clone https://github.com/Baro-coder/C_LibLogs
+cd C_LibLogs
 ```
 
 2. Build:
 
 ``` console
-
+gcc -c ./src/logs.c -o ./src/log.o -Iinclude
+ar crs ./src/liblogs.a ./src/log.o
 ```
 
 3. Install:
 
 ``` console
+sudo cp ./include/logs.h /usr/local/include/
+sudo cp ./src/liblogs.a /usr/local/lib/
+```
 
+To compile your program using the library, use:
+
+``` console
+gcc your_program.c -o your_program -llogs
+```
+
+### **Windows Installation**
+
+#### **Using CMake**
+
+1. Install [CMake](https://cmake.org/download/) and [MinGW-w64](https://www.mingw-w64.org/) if not already installed.
+
+2. Open a terminal in the project directory and run:
+
+``` console
+mkdir build && cd build
+cmake .. -G "MinGW Makefiles"
+mingw32-make
+```
+
+***Alternatively***, include the library in your CMake project with:
+
+``` cmake
+add_subdirectory(c-liblogs)
+target_link_libraries(your_project PRIVATE c-liblogs)
+```
+
+#### **Manual Installation**
+
+1. Clone repository:
+
+``` console
+git clone https://github.com/Baro-coder/C_LibLogs
+cd C_LibLogs
+```
+
+2. Build:
+
+``` console
+gcc -c ./src/logs.c -o ./src/log.o -Iinclude
+ar crs ./src/liblogs.a ./src/log.o
+```
+
+3. Copy necessary files to your project directory:
+
+``` console
+copy include\logs.h C:\your_project\include
+copy src\liblogs.a C:\your_project\lib\
+```
+
+***Alternatively***, if you want the library to be available **globally** (not only in an actual project), you can copy the files to MinGW resources with:
+
+``` console
+copy include\logs.h C:\MinGW\include
+copy src\liblogs.a C:\MinGW\lib\
+```
+
+To compile your program using the library, use:
+
+``` console
+gcc your_program.c -o your_program.exe -Lyour_project/lib -llogs -Iyour_project/include
 ```
 
 ---
