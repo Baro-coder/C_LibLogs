@@ -11,7 +11,7 @@
 3. [Example](#example)
 4. [License](#license)
 
---- 
+---
 
 ## **Overview**
 
@@ -20,6 +20,7 @@
 Simple logging library developed in C.
 
 *Example output:*
+
 ``` text
 [08-04-2023 15:14:22] | [ INFO  ] | [App (19683)] | Initializing...
 [08-04-2023 15:14:22] | [ DEBUG ] | [Sub (19685)] | P1 -- Init...
@@ -41,6 +42,7 @@ Simple logging library developed in C.
 ```
 
 *Format:*
+
 ``` text
 [08-04-2023 15:14:22] | [ INFO  ] | [App (19683)] | Initializing...
  ^datetime               ^level      ^owner(^PID)    ^Formatted message
@@ -115,23 +117,25 @@ void logs_set_output_stream_default();
 
 ## **Installation**
 
-### *Attention!* Installation guide requires a UNIX type operating system.
+### *Attention!* Installation guide requires a UNIX type operating system
 
-### **Automatic**
+### 0. Clone repository
 
-### 1. Clone repository:
+0.1. Download repository:
 
-1.1. Download repository:
 ``` console
 git clone https://github.com/Baro-coder/C_LibLogs
 ```
 
-1.2. Change directory:
+0.2. Change directory:
+
 ``` console
 cd ./C_LibLogs/
 ```
 
-### 2. Run installation script (*`sudo` required*):
+### **Automatic**
+
+### 1. Run installation script (*`sudo` required*)
 
 ```console
 sudo ./install.sh
@@ -141,37 +145,30 @@ sudo ./install.sh
 
 ### **Manual**
 
-### 1. Clone repository:
-
-1.1. Download repository:
-``` console
-git clone https://github.com/Baro-coder/C_LibLogs
-```
-
-1.2. Change directory:
-``` console
-cd ./C_LibLogs/
-```
-
-### 2. Build:
+### 1. Build
 
 2.1. Compile source:
+
 ``` console
 gcc -c ./logs/logs.c -o ./logs/logs.o
 ```
 
 2.2. Make static library:
+
 ```console
 ar crs ./logs/liblogs.a ./logs/logs.o
 ```
 
-### 3. Link:
+### 2. Link
+
 3.1. Copy header file to include path:
+
 ```console
 sudo ./logs/logs.h /usr/include/
 ```
 
 3.2. Copy library file to lib path:
+
 ``` console
 sudo ./logs/liblogs.a /usr/lib/
 ```
@@ -183,6 +180,7 @@ sudo ./logs/liblogs.a /usr/lib/
 ### **Source code**
 
 *fork.c :*
+
 ``` c
 #include <logs.h>
 #include <sys/wait.h>
@@ -224,14 +222,17 @@ int main(void) {
 ```
 
 ### **Compilation**
+
 You have to link library in compilation process:
 
 *Example:*
+
 ``` console
 gcc fork.c -o fork.out -llogs
 ```
 
 ### **Output**
+
 ``` console
 ./fork.out
 ```
@@ -266,6 +267,6 @@ gcc fork.c -o fork.out -llogs
 
 ## **License**
 
-Library is full **open-source software**. You can redistribute it and/or modify it under the terms of the **GNU General Public License v3**. 
+Library is full **open-source software**. You can redistribute it and/or modify it under the terms of the **GNU General Public License v3**.
 
 See [*LICENSE*](https://github.com/Baro-coder/C_LibLogs/blob/master/LICENSE) for details.
