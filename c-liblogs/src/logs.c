@@ -68,6 +68,7 @@ static char *get_username()
         }
         return pw->pw_name;
     }
+    return "unknown";
 }
 #endif
 
@@ -190,7 +191,7 @@ void __log(log_level_t level, const char *owner, const char *fmt, va_list args)
         return;
     }
 
-    if (owner == NULL || owner == "" || owner == " " || owner[0] == '\0')
+    if (owner == NULL || strcmp(owner, "") == 0 || strcmp(owner, " ") == 0 || owner[0] == '\0')
     {
         __log_print(level, OWNER_DEFAULT, fmt, args);
     }
