@@ -36,6 +36,9 @@ static bool_t mute_std_streams = 0;
 #include <Lmcons.h>
 #include <process.h>
 
+// -- Thread-Safety Semaphore
+static HANDLE mtx = NULL;
+
 // -- Get username
 static char *get_username()
 {
@@ -107,7 +110,13 @@ void __log_print(log_level_t level, const char *owner, const char *fmt, va_list 
             tm->tm_min,
             tm->tm_sec);
 
-#ifdef __linux__
+#ifdef _WIN32
+    // -- Mutex Lock
+    if (mtx != NULL)
+    {
+        WaitForSingleObject(mtx, INFINITE);
+    }
+#elif __linux__
     // -- Mutex Lock
     if (mtx != NULL)
     {
@@ -168,7 +177,13 @@ void __log_print(log_level_t level, const char *owner, const char *fmt, va_list 
     free(now);
     free(timestamp);
 
-#ifdef __linux__
+#ifdef _WIN32
+    // -- Mutex Unlock
+    if (mtx != NULL)
+    {
+        ReleaseSemaphore(mtx, 1, NULL);
+    }
+#elif __linux__
     // -- Mutex Unlock
     if (mtx != NULL)
     {
@@ -203,8 +218,36 @@ void __log(log_level_t level, const char *owner, const char *fmt, va_list args)
 
 /* ---------------------------------------------------------------------------------------------------- */
 /* -- PUBLIC FUNCTIONS -- */
+#ifdef _WIN32
+#include <windows.h>
+// ---- Threads-Safety semaphore init
+int logs_threads_safety_enable(const char *sem_name)
+{
+    mtx = CreateSemaphore(NULL, 1, 1, sem_name);
+    if (mtx == NULL)
+    {
+        return 1;
+    }
+    return 0;
+}
 
-#ifdef __linux__
+// ---- Threads-Safety semaphore destroy
+int logs_threads_safety_disable(const char *sem_name)
+{
+    if (mtx == NULL)
+    {
+        return 2;
+    }
+
+    if (!CloseHandle(mtx))
+    {
+        return 1;
+    }
+
+    mtx = NULL;
+    return 0;
+}
+#elif __linux__
 // ---- Threads-Safety semaphore init
 int logs_threads_safety_enable(const char *sem_name)
 {
