@@ -1,4 +1,4 @@
-file(GLOB LOGS_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
+file(GLOB LOGS_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src/c/*.c")
 
 add_library(c-liblogs ${LOGS_SRC})
 
