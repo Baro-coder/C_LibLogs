@@ -1,5 +1,6 @@
 #include <logs.h>
+#include <iostream>
+#include <string>
+#include <fstream>
 
-void log(const char* message) {
-    std::cout << message << std::endl;
-}
+using namespace std;
