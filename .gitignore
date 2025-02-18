@@ -1,9 +1,6 @@
 # VS Code
 .vscode/
 
-# Git Token
-.git.tk
-
 # Cache and builds
 build
 *.cache
